@@ -1,12 +1,10 @@
 package Sundial;
 
-public class Sundial {
-
-	
-	public static void main(String[] args) {
-		
-		System.out.println("Hellow World!");
-
-	}
-
+public class SundialInterface{
 }
+class SundialCompute{
+}
+class SundialDraw{  
+}
+
+//how do you guys wanna set this up?
