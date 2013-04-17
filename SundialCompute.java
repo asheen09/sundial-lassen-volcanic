@@ -7,35 +7,26 @@ package Sundial;
  * 	position 0  = 6  am
  *    position 6  = 12 pm 
  *    position 12 = 6  pm 
- *
- * double[] standardMeri;
- * 	Stores the list of standard meridians (west) 
- * 	0 = 52.5 Newfoundland; 1 = 60 Atlantic;       2 = 75 Eastern
- * 	3 = 90 Central;        4 = 105 Mountain;      5 = 120 Pacific
- * 	6 = 135 Yukon;         7 = 150 Alaska-Hawaii; 8 = 165 Bering
  */
 
 public class SundialCompute{
 
-	private float latitude;
-	private float longitude;
+	private double   latitude;
+	private double   longitude;
 	private double[] angOfHours;
-	private double[] stdMeriList;
+	private int      stdMeri;
 	
-	public SundialCompute(float lati, float longi){
+	public SundialCompute(double lati, double longi){
 		latitude = lati;
 		longitude = longi;
 		angOfHours = new double[13];
-		stdMeriList = new double[9];
-		
-		stdMeriList[0] = 52.5;
-		for(int i = 1; i < 9; i++){
-			stdMeriList[i] = 45 + 15*i; 
-		}
+		stdMeri = (int)(Math.round(longitude/15) * 15);
 	}
 	
 	/**
-	 * Calculates the angle of an hour line with the gnomon
+	 * Calculates the angle formed by each hour line with the gnomon
+    *    Negative values are angles left of the gnomon
+	 *    Positive values are angles right of the gnomon
 	 *
 	 * tan(d) = tan(t)*sin(phi)
 	 * phi is the latitude of the place the sundial is located
@@ -43,70 +34,60 @@ public class SundialCompute{
 	 * t is the time measured from noon in degrees of arc. 1 hour = 15 degrees
 	 *
 	 * Also adjusts the angle based on the longitude and standard meridian
+	 * Returns the calculated angles in a double[]
 	 * 
 	 */
-	public void hourAngles(){
+	public double[] hourAngles(){
 		double tanD = 0;
 		double hourOfTime = 15.00;
-		double stdMeridian = 0;
 		double adjustmentAng = 0;
-		
-		
-		/** 
-		 * Newfoundland's standard meridian is 52.5
-		 * Less than 60 and not a multiple of 15
-		 * Fails on input of 180 or -180 < will fix later
-		 */ 
-		if(Math.abs(longitude) < 60){
-			stdMeridian = stdMeriList[0];
-		}
-		else{
-			stdMeridian = stdMeriList[(int)(Math.abs(longitude) / 15) - 3];
-		} 
 		
 		/*
 		 * Adjust hour angle by the difference of the longitude
 		 * and respective standard meridian
 		 */
-		if(longitude < 0){
-			adjustmentAng = longitude + stdMeridian;
+		if(longitude == stdMeri){
+			adjustmentAng = 0;
 		}
-		else{
-			adjustmentAng = longitude - stdMeridian;
+		/**
+		 * adjustmentAng will be positive if longitude is west of
+       * standard meridian and negative otherwise
+		 */
+		else {
+			adjustmentAng = stdMeri - longitude;
 		}
 
-		/*
-		 * Compute angles between 6 am - 11 am
+		/**
+		 * Further modify adjustmentAng with EOT here
 		 */
-		for(int i = 1; i < 7; i++){
+
+		/*
+		 * Compute angles between 6 am - 6pm
+		 */
+		for(int i = -6; i < 7; i++){
 			if(i*hourOfTime+adjustmentAng == 90){
-				angOfHours[6-i] = 90;
-			}
-			else{
-				tanD = Math.tan(((i*hourOfTime+adjustmentAng)/180)*Math.PI)*Math.sin((latitude/180)*Math.PI);
-				angOfHours[6-i] = Math.toDegrees(Math.atan(tanD));
-			}
-		}
-		
-		/*
-		 * may have to calculate 12 pm differently
-	    * if adjustmentAngle < 0, shift 12 pm to the left of middle
-		 * else, shift 12 pm to the right of middle
-		 */
-		
-		/*
-		 * Compute angles between 1 pm - 6 pm
-		 */
-		for(int i = 0; i < 7; i++){
-			if(i*hourOfTime-adjustmentAng == 90){
 				angOfHours[i+6] = 90;
 			}
 			else{
-				tanD = Math.tan(((i*hourOfTime-adjustmentAng)/180)*Math.PI)*Math.sin((latitude/180)*Math.PI);
+				tanD = Math.tan(((i*hourOfTime+adjustmentAng)/180)*Math.PI)*Math.sin((Math.abs(latitude)/180)*Math.PI);
 				angOfHours[i+6] = Math.toDegrees(Math.atan(tanD));
 			}
-		} 	 	
-	}
+		}
+		/**
+		 * Fix angles retrieved from atan
+		 * atan returns angles between -90 to 90 only
+		 *
+		 * [0] = 6 am     [12] = 6 pm
+		 */
+		if(angOfHours[0] > 0){
+			angOfHours[0] = -180 + angOfHours[0]; 
+		}
+		if(angOfHours[12] < 0){
+			angOfHours[12] = 180 + angOfHours[12];
+		}
+		
+		return angOfHours;
+	}	
 	
 	public void printAngles(){
 		for(int i = 0; i < 7; i++){
@@ -116,13 +97,9 @@ public class SundialCompute{
 			System.out.println(i-6 + ": " + angOfHours[i]);
 		}
 	}
-
-	public double[] getAngles(){
-		return angOfHours;
-	}
 	
 	public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(50, -96);
+		SundialCompute sc = new SundialCompute(21, -158);
 		sc.hourAngles();
 		sc.printAngles();
 	}
