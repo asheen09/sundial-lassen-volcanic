@@ -89,6 +89,17 @@ public class SundialCompute{
 		return angOfHours;
 	}	
 	
+	/**
+	 * Accepts a double[] of angles in degrees
+	 * Returns the double[] of angles in radians 
+	 */
+	public double[] intoRadians(double[] angles){
+		for(int i = 0; i < angles.length; i++){
+			angles[i] = Math.toRadians(angles[i]);
+		}
+		return angles;
+	}
+	
 	public void printAngles(){
 		for(int i = 0; i < 7; i++){
 			System.out.println(i+6 + ": " + angOfHours[i]);
@@ -99,8 +110,8 @@ public class SundialCompute{
 	}
 	
 	public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(21, -158);
-		sc.hourAngles();
+		SundialCompute sc = new SundialCompute(21, -150);
+		sc.intoRadians(sc.hourAngles());
 		sc.printAngles();
 	}
 }
