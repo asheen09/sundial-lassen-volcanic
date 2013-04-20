@@ -7,6 +7,11 @@ package Sundial;
  * 	position 0  = 6  am
  *    position 6  = 12 pm 
  *    position 12 = 6  pm 
+ *
+ * int[] days
+ *    Stores the days in each month
+ *    position 0 =  January
+ *    position 11 = December
  */
 
 public class SundialCompute{
@@ -16,6 +21,7 @@ public class SundialCompute{
 	private double[] angOfHours;
 	private int      stdMeri;
 	private int      date;
+	private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	
 	public SundialCompute(double lati, double longi, int date){
 		latitude = lati;
@@ -23,12 +29,11 @@ public class SundialCompute{
 		angOfHours = new double[13];
 		stdMeri = (int)(Math.round(longitude/15) * 15);
 		this.date = date;
-
 	}
 	
 	/**
 	 * Calculates the angle formed by each hour line with the gnomon
-    *    Negative values are angles left of the gnomon
+	 *    Negative values are angles left of the gnomon
 	 *    Positive values are angles right of the gnomon
 	 *
 	 * tan(d) = tan(t)*sin(phi)
@@ -50,7 +55,7 @@ public class SundialCompute{
 		 * and respective standard meridian
 		 *
 		 * adjustmentAng will be positive if longitude is west of
-       * standard meridian and negative otherwise
+		 * standard meridian and negative otherwise
 		 */
 		if(longitude == stdMeri){
 			adjustmentAng = 0;
@@ -59,7 +64,8 @@ public class SundialCompute{
 			adjustmentAng = stdMeri - longitude;
 		}
 
-		//compute EOT		 
+		// Compute EOT
+		adjustmentAng = adjustmentAng + EOT();		 
 
 		/*
 		 * Compute angles between 6 am - 6pm
@@ -111,8 +117,13 @@ public class SundialCompute{
 	  *
 	  * The day number can change based on leap year
 	  */
-	public void EOT(){
+	public double EOT(){
 		int tempDate = date;
+		int dayNum = 0;
+		boolean isLeapY = false;
+		// B and E are part of the EOT equation
+		double B = 0;
+		double E = 0;
 		
 		// Extracts the year
 		tempDate = (tempDate/10000)*10000;
@@ -125,6 +136,37 @@ public class SundialCompute{
 		//Extracts the month
 		int month = date/1000000;
 		
+		// Find the number of days that have past
+		for(int i = 0; i < month-1; i++){
+			dayNum = dayNum + days[i];
+		}
+		dayNum = dayNum + day;
+		
+		// Determine if there is a leap year
+		if(year%4 == 0){
+			if(year%100 != 0){
+				isLeapY = true;
+			}
+			else if(year%400 == 0){
+				isLeapY = true;
+			}
+		}
+		
+		// Add an extra day if it is past February on a leap year
+		if(isLeapY && month > 2){
+			dayNum = dayNum + 1;
+		}
+		
+		/* 
+		 * Calculate time adjustment based on dayNum
+		 * Convert B to degrees
+		 */
+		B = 360.0 * (dayNum - 81.0) / 365.0;
+		B = (B/180.0)*Math.PI;
+		E = 9.87*Math.sin(2*B) - 7.53*Math.cos(B) - 1.5*Math.sin(B);
+		
+		return E;
+				
 	}	
 	public void printAngles(){
 		for(int i = 0; i < 7; i++){
@@ -136,7 +178,13 @@ public class SundialCompute{
 	}
 	
 	public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(21, -158, 4172013);
+		SundialCompute sc = new SundialCompute(21, -150, 4172013);
+		
+		sc.hourAngles();
+		sc.printAngles();
+		
+		System.out.println();
+		
 		sc.intoRadians(sc.hourAngles());
 		sc.printAngles();
 	}
