@@ -15,12 +15,15 @@ public class SundialCompute{
 	private double   longitude;
 	private double[] angOfHours;
 	private int      stdMeri;
+	private int      date;
 	
-	public SundialCompute(double lati, double longi){
+	public SundialCompute(double lati, double longi, int date){
 		latitude = lati;
 		longitude = longi;
 		angOfHours = new double[13];
 		stdMeri = (int)(Math.round(longitude/15) * 15);
+		this.date = date;
+
 	}
 	
 	/**
@@ -45,21 +48,18 @@ public class SundialCompute{
 		/*
 		 * Adjust hour angle by the difference of the longitude
 		 * and respective standard meridian
+		 *
+		 * adjustmentAng will be positive if longitude is west of
+       * standard meridian and negative otherwise
 		 */
 		if(longitude == stdMeri){
 			adjustmentAng = 0;
 		}
-		/**
-		 * adjustmentAng will be positive if longitude is west of
-       * standard meridian and negative otherwise
-		 */
 		else {
 			adjustmentAng = stdMeri - longitude;
 		}
 
-		/**
-		 * Further modify adjustmentAng with EOT here
-		 */
+		//compute EOT		 
 
 		/*
 		 * Compute angles between 6 am - 6pm
@@ -85,7 +85,6 @@ public class SundialCompute{
 		if(angOfHours[12] < 0){
 			angOfHours[12] = 180 + angOfHours[12];
 		}
-		
 		return angOfHours;
 	}	
 	
@@ -100,6 +99,33 @@ public class SundialCompute{
 		return angles;
 	}
 	
+	/**
+	  * Further refine adjustmentAng based on EOT
+	  * This is done to correct for the Earth's non-circular orbit 
+	  * Sundials are "slow" in Jan, Feb, Mar, Apr, July, Sep
+	  *              "fast" in May, June, Oct, Nov, Dec 
+	  *
+	  * E = 9.87 * sin (2B) - 7.53 * cos (B) - 1.5 * sin (B)
+	  * B = 360 * (N - 81) / 365
+	  * N = day number, January 1 = day 1
+	  *
+	  * The day number can change based on leap year
+	  */
+	public void EOT(){
+		int tempDate = date;
+		
+		// Extracts the year
+		tempDate = (tempDate/10000)*10000;
+		int year = (date - tempDate);
+		
+		// Extracts the day
+		tempDate = (tempDate/1000000)*1000000 + year;
+		int day = (date - tempDate)/10000;
+		
+		//Extracts the month
+		int month = date/1000000;
+		
+	}	
 	public void printAngles(){
 		for(int i = 0; i < 7; i++){
 			System.out.println(i+6 + ": " + angOfHours[i]);
@@ -110,7 +136,7 @@ public class SundialCompute{
 	}
 	
 	public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(21, -150);
+		SundialCompute sc = new SundialCompute(21, -158, 4172013);
 		sc.intoRadians(sc.hourAngles());
 		sc.printAngles();
 	}
