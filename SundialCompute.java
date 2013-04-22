@@ -65,7 +65,7 @@ public class SundialCompute{
 		}
 
 		// Compute EOT
-		adjustmentAng = adjustmentAng + EOT();		 
+		adjustmentAng = adjustmentAng - EOT();		 
 
 		/*
 		 * Compute angles between 6 am - 6pm
@@ -159,11 +159,14 @@ public class SundialCompute{
 		
 		/* 
 		 * Calculate time adjustment based on dayNum
+		 * 
 		 * Convert B to degrees
+		 * E/4 = translate minutes to degrees (4 minute = 1 degree)
 		 */
 		B = 360.0 * (dayNum - 81.0) / 365.0;
 		B = (B/180.0)*Math.PI;
 		E = 9.87*Math.sin(2*B) - 7.53*Math.cos(B) - 1.5*Math.sin(B);
+		E = E / 4.0;
 		
 		return E;
 				
