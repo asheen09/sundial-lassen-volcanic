@@ -85,6 +85,10 @@ import java.util.*;
 		iY = iYAppletCenter;
 	} // closes init()
 	
+	public void invalidInputMessageBox(){ // begins invalidInputMessageBox
+		JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+	} // closes invalidInputMessageBox
+	
 	public void actionPerformed(ActionEvent event){ // begins actionPerformed
 		String buttonName = event.getActionCommand();
 		
@@ -95,56 +99,48 @@ import java.util.*;
 		double dLatitude = 0;
 		double dLongitude = 0;
 		int iDate = 0;
+		int iLength = 0;
 		
-		// if(buttonName.equals(searchButton)){ // begins if
 		if(searchButton.equals(event.getSource())){ // begins if - 
-			
-			int iLength = 0;
-			
-			// Latitude
-			try{ // begins try
-				dLatitude = Double.parseDouble(latitude);
-			} // closes try
-			catch(InputMismatchException ime){ // begins catch
-				JOptionPane.showMessageDialog(null, "User did not enter valid input.");
-			} // closes catch
-			iLength = latitude.length();
-			if(iLength < 0){ // begins if
-				JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+			iLength = latitude.length(); // latitude input validation
+			if(iLength == 0){ // begins if
+				invalidInputMessageBox();
 			} // closes if
-			
+			iLength = longitude.length(); // longitude input validation
+			if(iLength == 0){ // begins else if
+				invalidInputMessageBox();
+			} // closes else if
+			iLength = date.length(); // date input validation
+			if(iLength == 0){ // begins else if
+				invalidInputMessageBox();
+			}
 			else{ // begins else
-				// Longitude
 				try{ // begins try
-					dLongitude = Double.parseDouble(longitude);
+					dLatitude = Double.parseDouble(latitude); // latitude conversion
 				} // closes try
 				catch(InputMismatchException ime){ // begins catch
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+					invalidInputMessageBox();
 				} // closes catch
-				iLength = longitude.length();
-				if(iLength < 0){ // begins if
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
-				} // closes if
-				
-				// Date
-				iLength = date.length();
-				if(iLength < 0){ // begins if
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
-				} // closes if
-				if(iLength < 8){ // begins if
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
-				} // closes if
-				if(iLength > 8){ // begins if
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
-				} // closes if
+				catch(NumberFormatException nfe){ // begins catch
+					invalidInputMessageBox();
+				} // closes catch
+				try{ // begins try
+					dLongitude = Double.parseDouble(longitude); // longitude conversion
+				} // closes try
+				catch(InputMismatchException ime){ // begins catch
+					invalidInputMessageBox();
+				} // closes catch
+				catch(NumberFormatException nfe){ // begins catch
+					invalidInputMessageBox();
+				} // closes catch
 				if(date.substring(0,1).equals("0")){ // begins if
 					date = date.substring(1, date.length());
 				} // closes if
 				try{ // begins try
-					iDate = Integer.parseInt(date);
+					iDate = Integer.parseInt(date); // date conversion
 				} // closes try
 				catch(InputMismatchException ime){ // begins catch
-					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+					invalidInputMessageBox();
 				} // closes catch
 				
 				/** Taken from SundialCompute.java EOT()*/
@@ -178,9 +174,10 @@ import java.util.*;
 				if(isLeapY && month > 2){ // begins if
 					dayNum = dayNum + 1;
 				} // closes if
-			} // close else
-		} // closes if
-		else if(buttonName.equals(printButton)){ // begins else if
+			} // closes else
+				
+		else if(printButton.equals(event.getSource())){ // begins else if
+			JOptionPane.showMessageDialog(null, "Hello!!!");
 		} // closes else if
 	} // closes actionPerformed
 	
