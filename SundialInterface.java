@@ -1,5 +1,3 @@
-package Sundial;
-
 /** Java Imports */
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -13,16 +11,21 @@ import java.awt.Label;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import javax.swing.JOptionPane;
+import java.util.*;
 
 	public class SundialInterface extends Applet implements ActionListener{ // begins SundialInterface
 	// Variable Declaration
 		public static final String SEARCH = new String("Search");
+		public static final String PRINT = new String("Print");
 		private Integer iX = new Integer(0);
       private Integer iY = new Integer(0);
 		private Integer iXAppletCenter = 0;
 		private Integer iYAppletCenter = 0;
+		private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
 	// Button Data Fields
 		private Button searchButton = new Button(SEARCH);
+		private Button printButton = new Button(PRINT);
 	// Label Data Field
 		private Label latitudeHere = new Label("Latitude: ");
 		private Label longitudeHere = new Label("Longitude: ");
@@ -52,6 +55,7 @@ import javax.swing.JOptionPane;
 		Panel panel5 = new Panel();
 		Panel panel6 = new Panel();
 		Panel panel7 = new Panel();
+		Panel panel8 = new Panel();
 	// Panel Components
 		panel1.add(latitudeHere);
 		panel2.add(longitudeHere);
@@ -60,6 +64,7 @@ import javax.swing.JOptionPane;
 		panel5.add(tfLongitude);
 		panel6.add(tfDate);
 		panel7.add(searchButton);
+		panel8.add(printButton);
 	// Panel Additives
 		mainPanel.add(panel1);
 		mainPanel.add(panel4);
@@ -68,6 +73,7 @@ import javax.swing.JOptionPane;
 		mainPanel.add(panel3);
 		mainPanel.add(panel6);
 		mainPanel.add(panel7);
+		mainPanel.add(panel8);
 	// (Get) Applet Size
 		int iWidth = this.getWidth();
 		int iHeight = this.getHeight();
@@ -85,7 +91,97 @@ import javax.swing.JOptionPane;
 		String latitude = tfLatitude.getText();
 		String longitude = tfLongitude.getText();
 		String date = tfDate.getText();
+		
+		double dLatitude = 0;
+		double dLongitude = 0;
+		int iDate = 0;
+		
+		// if(buttonName.equals(searchButton)){ // begins if
+		if(searchButton.equals(event.getSource())){ // begins if - 
 			
+			int iLength = 0;
+			
+			// Latitude
+			try{ // begins try
+				dLatitude = Double.parseDouble(latitude);
+			} // closes try
+			catch(InputMismatchException ime){ // begins catch
+				JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+			} // closes catch
+			iLength = latitude.length();
+			if(iLength < 0){ // begins if
+				JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+			} // closes if
+			
+			else{ // begins else
+				// Longitude
+				try{ // begins try
+					dLongitude = Double.parseDouble(longitude);
+				} // closes try
+				catch(InputMismatchException ime){ // begins catch
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes catch
+				iLength = longitude.length();
+				if(iLength < 0){ // begins if
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes if
+				
+				// Date
+				iLength = date.length();
+				if(iLength < 0){ // begins if
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes if
+				if(iLength < 8){ // begins if
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes if
+				if(iLength > 8){ // begins if
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes if
+				if(date.substring(0,1).equals("0")){ // begins if
+					date = date.substring(1, date.length());
+				} // closes if
+				try{ // begins try
+					iDate = Integer.parseInt(date);
+				} // closes try
+				catch(InputMismatchException ime){ // begins catch
+					JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+				} // closes catch
+				
+				/** Taken from SundialCompute.java EOT()*/
+				int tempDate = iDate; // modify "date" variable to "iDate"
+				int dayNum = 0;
+				boolean isLeapY = false;
+				
+				//Extract Year
+				tempDate = (tempDate/1000)*10000;
+				int year = (iDate - tempDate);
+				// Extract Day
+				tempDate = (tempDate/1000000)*1000000 + year;
+				int day =(iDate - tempDate)/10000;
+				// Extract Month
+				int month =  iDate/1000000;
+				// Find Number of Days Past
+				for(int i = 0; i < month - 1; i++){ // begins for
+					dayNum = dayNum + days[i];
+				} // closes for
+				dayNum = dayNum + day;
+				// Determine Leap Year
+				if(year%4 == 0){ // begins if
+					if(year%100 != 0){ // begins if
+						isLeapY = true;
+					} // closes if
+					else if(year%400 == 0){ // begins else if
+						isLeapY = true;
+					} // closes else if
+				} // closes if
+				// Add extra day if past February on a leap year
+				if(isLeapY && month > 2){ // begins if
+					dayNum = dayNum + 1;
+				} // closes if
+			} // close else
+		} // closes if
+		else if(buttonName.equals(printButton)){ // begins else if
+		} // closes else if
 	} // closes actionPerformed
 	
 	public void paint(Graphics window){ // begins paint
