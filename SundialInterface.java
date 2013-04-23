@@ -109,75 +109,76 @@ import java.util.*;
 			iLength = longitude.length(); // longitude input validation
 			if(iLength == 0){ // begins else if
 				invalidInputMessageBox();
-			} // closes else if
+			} // closes if
 			iLength = date.length(); // date input validation
 			if(iLength == 0){ // begins else if
 				invalidInputMessageBox();
-			}
-			else{ // begins else
-				try{ // begins try
-					dLatitude = Double.parseDouble(latitude); // latitude conversion
-				} // closes try
-				catch(InputMismatchException ime){ // begins catch
-					invalidInputMessageBox();
-				} // closes catch
-				catch(NumberFormatException nfe){ // begins catch
-					invalidInputMessageBox();
-				} // closes catch
-				try{ // begins try
-					dLongitude = Double.parseDouble(longitude); // longitude conversion
-				} // closes try
-				catch(InputMismatchException ime){ // begins catch
-					invalidInputMessageBox();
-				} // closes catch
-				catch(NumberFormatException nfe){ // begins catch
-					invalidInputMessageBox();
-				} // closes catch
-				if(date.substring(0,1).equals("0")){ // begins if
-					date = date.substring(1, date.length());
-				} // closes if
-				try{ // begins try
-					iDate = Integer.parseInt(date); // date conversion
-				} // closes try
-				catch(InputMismatchException ime){ // begins catch
-					invalidInputMessageBox();
-				} // closes catch
+			} // closes if
+		} // closes if
+		else{ // begins else
+			try{ // begins try
+				dLatitude = Double.parseDouble(latitude); // latitude conversion
+			} // closes try
+			catch(InputMismatchException ime){ // begins catch
+				invalidInputMessageBox();
+			} // closes catch
+			catch(NumberFormatException nfe){ // begins catch
+				invalidInputMessageBox();
+			} // closes catch
+			try{ // begins try
+				dLongitude = Double.parseDouble(longitude); // longitude conversion
+			} // closes try
+			catch(InputMismatchException ime){ // begins catch
+				invalidInputMessageBox();
+			} // closes catch
+			catch(NumberFormatException nfe){ // begins catch
+				invalidInputMessageBox();
+			} // closes catch
+			if(date.substring(0,1).equals("0")){ // begins if
+				date = date.substring(1, date.length());
+			} // closes if
+			try{ // begins try
+				iDate = Integer.parseInt(date); // date conversion
+			} // closes try
+			catch(InputMismatchException ime){ // begins catch
+				invalidInputMessageBox();
+			} // closes catch
 				
-				/** Taken from SundialCompute.java EOT()*/
-				int tempDate = iDate; // modify "date" variable to "iDate"
-				int dayNum = 0;
-				boolean isLeapY = false;
+			/** Taken from SundialCompute.java EOT()*/
+			int tempDate = iDate; // modify "date" variable to "iDate"
+			int dayNum = 0;
+			boolean isLeapY = false;
 				
-				//Extract Year
-				tempDate = (tempDate/1000)*10000;
-				int year = (iDate - tempDate);
-				// Extract Day
-				tempDate = (tempDate/1000000)*1000000 + year;
-				int day =(iDate - tempDate)/10000;
-				// Extract Month
-				int month =  iDate/1000000;
-				// Find Number of Days Past
-				for(int i = 0; i < month - 1; i++){ // begins for
-					dayNum = dayNum + days[i];
-				} // closes for
-				dayNum = dayNum + day;
-				// Determine Leap Year
-				if(year%4 == 0){ // begins if
-					if(year%100 != 0){ // begins if
-						isLeapY = true;
-					} // closes if
-					else if(year%400 == 0){ // begins else if
-						isLeapY = true;
-					} // closes else if
+			//Extract Year
+			tempDate = (tempDate/1000)*10000;
+			int year = (iDate - tempDate);
+			// Extract Day
+			tempDate = (tempDate/1000000)*1000000 + year;
+			int day =(iDate - tempDate)/10000;
+			// Extract Month
+			int month =  iDate/1000000;
+			// Find Number of Days Past
+			for(int i = 0; i < month - 1; i++){ // begins for
+				dayNum = dayNum + days[i];
+			} // closes for
+			dayNum = dayNum + day;
+			// Determine Leap Year
+			if(year%4 == 0){ // begins if
+				if(year%100 != 0){ // begins if
+					isLeapY = true;
 				} // closes if
-				// Add extra day if past February on a leap year
-				if(isLeapY && month > 2){ // begins if
-					dayNum = dayNum + 1;
-				} // closes if
-			} // closes else
+				else if(year%400 == 0){ // begins else if
+					isLeapY = true;
+				} // closes else if
+			} // closes if
+			// Add extra day if past February on a leap year
+			if(isLeapY && month > 2){ // begins if
+				dayNum = dayNum + 1;
+			} // closes if
+		} // closes else
 				
-		else if(printButton.equals(event.getSource())){ // begins else if
-			JOptionPane.showMessageDialog(null, "Hello!!!");
+		if(printButton.equals(event.getSource())){ // begins else if
+			JOptionPane.showMessageDialog(null, "(''')(O,,,O)(''')");
 		} // closes else if
 	} // closes actionPerformed
 	
