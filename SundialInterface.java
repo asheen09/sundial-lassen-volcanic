@@ -1,3 +1,5 @@
+package sundial;
+
 /** Java Imports */
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -14,17 +16,19 @@ import javax.swing.JOptionPane;
 import java.util.*;
 
 	public class SundialInterface extends Applet implements ActionListener{ // begins SundialInterface
+	
 	// Variable Declaration
-		public static final String SEARCH = new String("Search");
+		public static final String CALC = new String("Calculate");
 		public static final String PRINT = new String("Print");
 		private Integer iX = new Integer(0);
       private Integer iY = new Integer(0);
 		private Integer iXAppletCenter = 0;
 		private Integer iYAppletCenter = 0;
 		private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		private boolean allCorrect = false;
 
 	// Button Data Fields
-		private Button searchButton = new Button(SEARCH);
+		private Button calcButton = new Button(CALC);
 		private Button printButton = new Button(PRINT);
 	// Label Data Field
 		private Label latitudeHere = new Label("Latitude: ");
@@ -36,8 +40,13 @@ import java.util.*;
 		private TextField tfDate = new TextField(20);
 	
 	public void init(){ // begins init()
+		tfLatitude.setText("Range: -90.0 to 90.0");
+		tfLongitude.setText("Range: -180.0 to 180.0");
+		tfDate.setText("MMDDYYYY");
+	
 	// Initialize ActionListener
-		searchButton.addActionListener(this);
+		calcButton.addActionListener(this);
+		printButton.addActionListener(this);
 	// Panels
 		Panel mainPanel = new Panel();
 	// Panel Dimensions
@@ -63,7 +72,7 @@ import java.util.*;
 		panel4.add(tfLatitude);
 		panel5.add(tfLongitude);
 		panel6.add(tfDate);
-		panel7.add(searchButton);
+		panel7.add(calcButton);
 		panel8.add(printButton);
 	// Panel Additives
 		mainPanel.add(panel1);
@@ -85,11 +94,12 @@ import java.util.*;
 		iY = iYAppletCenter;
 	} // closes init()
 	
-	public void invalidInputMessageBox(){ // begins invalidInputMessageBox
-		JOptionPane.showMessageDialog(null, "User did not enter valid input.");
+	public void invalidInputMessageBox(String message){ // begins invalidInputMessageBox
+		JOptionPane.showMessageDialog(null, message);
 	} // closes invalidInputMessageBox
 	
 	public void actionPerformed(ActionEvent event){ // begins actionPerformed
+		
 		String buttonName = event.getActionCommand();
 		
 		String latitude = tfLatitude.getText();
@@ -99,86 +109,96 @@ import java.util.*;
 		double dLatitude = 0;
 		double dLongitude = 0;
 		int iDate = 0;
-		int iLength = 0;
 		
-		if(searchButton.equals(event.getSource())){ // begins if - 
-			iLength = latitude.length(); // latitude input validation
-			if(iLength == 0){ // begins if
-				invalidInputMessageBox();
+		if(calcButton.equals(event.getSource())){ // begins if - 
+			allCorrect = true;
+		
+			// latitude, longitude, date input length validation
+			if(latitude.length() < 1 || longitude.length() < 1 || date.length() < 1){
+				allCorrect = false;
+				invalidInputMessageBox("Do not leave any field blank");
 			} // closes if
-			iLength = longitude.length(); // longitude input validation
-			if(iLength == 0){ // begins else if
-				invalidInputMessageBox();
-			} // closes if
-			iLength = date.length(); // date input validation
-			if(iLength == 0){ // begins else if
-				invalidInputMessageBox();
-			} // closes if
-		} // closes if
-		else{ // begins else
-			try{ // begins try
-				dLatitude = Double.parseDouble(latitude); // latitude conversion
-			} // closes try
-			catch(InputMismatchException ime){ // begins catch
-				invalidInputMessageBox();
-			} // closes catch
-			catch(NumberFormatException nfe){ // begins catch
-				invalidInputMessageBox();
-			} // closes catch
-			try{ // begins try
-				dLongitude = Double.parseDouble(longitude); // longitude conversion
-			} // closes try
-			catch(InputMismatchException ime){ // begins catch
-				invalidInputMessageBox();
-			} // closes catch
-			catch(NumberFormatException nfe){ // begins catch
-				invalidInputMessageBox();
-			} // closes catch
-			if(date.substring(0,1).equals("0")){ // begins if
-				date = date.substring(1, date.length());
-			} // closes if
-			try{ // begins try
-				iDate = Integer.parseInt(date); // date conversion
-			} // closes try
-			catch(InputMismatchException ime){ // begins catch
-				invalidInputMessageBox();
-			} // closes catch
-				
+			else{ // begins else
+				try{ // begins try
+					dLatitude = Double.parseDouble(latitude); // latitude conversion
+					dLongitude = Double.parseDouble(longitude); // longitude conversion
+					if(date.substring(0,1).equals("0")){ // begins if
+						date = date.substring(1, date.length());
+					} // closes if
+					iDate = Integer.parseInt(date); // date conversion
+				} // closes try
+				catch(InputMismatchException ime){ // begins catch
+					allCorrect = false;
+					invalidInputMessageBox("The inserted information does not meet the requirements");
+				} // closes catch
+				catch(NumberFormatException nfe){ // begins catch
+					allCorrect = false;
+					invalidInputMessageBox("Please provide proper numbers for all fields\n" +
+				                          "Latitude range: -90.0 to 90.0\n" +
+												  "Longtidue range: -180.0 to 180.0");
+				} // closes catch
+			}
+			
+			// sanitization for latitude and longitude data
+			if(dLongitude < -180 || dLongitude > 180){
+				allCorrect = false;
+				invalidInputMessageBox("Please ensure longitude is in range: -180.0 to 180.0");
+			}
+			if(dLatitude < -90 || dLatitude > 90){
+				allCorrect = false;
+				invalidInputMessageBox("Please ensure latitude is in range: -90.0 to 90.0");
+			}
+					
 			/** Taken from SundialCompute.java EOT()*/
 			int tempDate = iDate; // modify "date" variable to "iDate"
 			int dayNum = 0;
 			boolean isLeapY = false;
 				
 			//Extract Year
-			tempDate = (tempDate/1000)*10000;
+			tempDate = (tempDate/10000)*10000;
 			int year = (iDate - tempDate);
 			// Extract Day
 			tempDate = (tempDate/1000000)*1000000 + year;
 			int day =(iDate - tempDate)/10000;
 			// Extract Month
 			int month =  iDate/1000000;
-			// Find Number of Days Past
-			for(int i = 0; i < month - 1; i++){ // begins for
-				dayNum = dayNum + days[i];
-			} // closes for
-			dayNum = dayNum + day;
-			// Determine Leap Year
-			if(year%4 == 0){ // begins if
-				if(year%100 != 0){ // begins if
-					isLeapY = true;
+			
+			// sanitization for month and day of the month
+			if(month < 1 || month > 12){
+				allCorrect = false;
+				invalidInputMessageBox("Please enter a month between 1 and 12\n" +
+				                       "Format: MMDDYYYY");
+			}
+			else if(day < 1 || day > days[month-1]){
+				allCorrect = false;
+				invalidInputMessageBox("Please enter a date within the given month's range\n" + 
+				                       "Format: MMDDYYYY");
+			}
+			else{
+				// Find Number of Days Past
+				for(int i = 0; i < month - 1; i++){ // begins for
+					dayNum = dayNum + days[i];
+				} // closes for
+				dayNum = dayNum + day;
+				// Determine Leap Year
+				if(year%4 == 0){ // begins if
+					if(year%100 != 0){ // begins if
+						isLeapY = true;
+					} // closes if
+					else if(year%400 == 0){ // begins else if
+						isLeapY = true;
+					} // closes else if
 				} // closes if
-				else if(year%400 == 0){ // begins else if
-					isLeapY = true;
-				} // closes else if
-			} // closes if
-			// Add extra day if past February on a leap year
-			if(isLeapY && month > 2){ // begins if
-				dayNum = dayNum + 1;
-			} // closes if
-		} // closes else
-				
+				// Add extra day if past February on a leap year
+				if(isLeapY && month > 2){ // begins if
+					dayNum = dayNum + 1;
+				} // closes if
+			} // closes else
+		}
 		if(printButton.equals(event.getSource())){ // begins else if
-			JOptionPane.showMessageDialog(null, "(''')(O,,,O)(''')");
+			if(allCorrect){
+				JOptionPane.showMessageDialog(null, "(''')(O,,,O)(''')");
+			}
 		} // closes else if
 	} // closes actionPerformed
 	
