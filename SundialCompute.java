@@ -2,14 +2,18 @@ package sundial;
 
 
 /**
+ * @author Alan Sheen
+ * This class computes the EOT and
+ * the hour line angles in degrees (with option to convert to radians)
+ * 
  * double[] angOfHours;
  * 	Stores the angles made between the hour lines and the gnomon
- * 	position 0  = 6  am
+ * 	  position 0  = 6  am
  *    position 6  = 12 pm 
  *    position 12 = 6  pm 
  *
  * int[] days
- *    Stores the days in each month
+ *  Stores the days in each month
  *    position 0 =  January
  *    position 11 = December
  */
@@ -20,7 +24,6 @@ public class SundialCompute{
 	private double   longitude;
 	private Double[] angOfHours;
 	private int      stdMeri;
-	private int      date;
 	private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	private int      month;
 	private int      day;
@@ -123,7 +126,6 @@ public class SundialCompute{
 	  * The day number can change based on leap year
 	  */
 	public double EOT(){
-		int tempDate = date;
 		int dayNum = 0;
 		boolean isLeapY = false;
 		// B and E are part of the EOT equation
@@ -173,16 +175,4 @@ public class SundialCompute{
 			System.out.println(i-6 + ": " + angOfHours[i]);
 		}
 	}
-	
-	/*public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(21, -150, 4, 17, 2013);
-		
-		sc.hourAngles();
-		sc.printAngles();
-		
-		System.out.println();
-		
-		sc.intoRadians(sc.hourAngles());
-		sc.printAngles();
-	}*/
 }
