@@ -1,4 +1,4 @@
-package Sundial;
+package sundial;
 
 
 /**
@@ -18,17 +18,22 @@ public class SundialCompute{
 
 	private double   latitude;
 	private double   longitude;
-	private double[] angOfHours;
+	private Double[] angOfHours;
 	private int      stdMeri;
 	private int      date;
 	private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	private int      month;
+	private int      day;
+	private int      year;
 	
-	public SundialCompute(double lati, double longi, int date){
+	public SundialCompute(double lati, double longi, int month, int day, int year){
 		latitude = lati;
 		longitude = longi;
-		angOfHours = new double[13];
+		angOfHours = new Double[13];
 		stdMeri = (int)(Math.round(longitude/15) * 15);
-		this.date = date;
+		this.month = month;
+		this.day = day;
+		this.year = year;
 	}
 	
 	/**
@@ -45,7 +50,7 @@ public class SundialCompute{
 	 * Returns the calculated angles in a double[]
 	 * 
 	 */
-	public double[] hourAngles(){
+	public Double[] hourAngles(){
 		double tanD = 0;
 		double hourOfTime = 15.00;
 		double adjustmentAng = 0;
@@ -72,7 +77,7 @@ public class SundialCompute{
 		 */
 		for(int i = -6; i < 7; i++){
 			if(i*hourOfTime+adjustmentAng == 90){
-				angOfHours[i+6] = 90;
+				angOfHours[i+6] = 90.0;
 			}
 			else{
 				tanD = Math.tan(((i*hourOfTime+adjustmentAng)/180)*Math.PI)*Math.sin((Math.abs(latitude)/180)*Math.PI);
@@ -98,7 +103,7 @@ public class SundialCompute{
 	 * Accepts a double[] of angles in degrees
 	 * Returns the double[] of angles in radians 
 	 */
-	public double[] intoRadians(double[] angles){
+	public Double[] intoRadians(Double[] angles){
 		for(int i = 0; i < angles.length; i++){
 			angles[i] = Math.toRadians(angles[i]);
 		}
@@ -124,17 +129,6 @@ public class SundialCompute{
 		// B and E are part of the EOT equation
 		double B = 0;
 		double E = 0;
-		
-		// Extracts the year
-		tempDate = (tempDate/10000)*10000;
-		int year = (date - tempDate);
-		
-		// Extracts the day
-		tempDate = (tempDate/1000000)*1000000 + year;
-		int day = (date - tempDate)/10000;
-		
-		//Extracts the month
-		int month = date/1000000;
 		
 		// Find the number of days that have past
 		for(int i = 0; i < month-1; i++){
@@ -180,8 +174,8 @@ public class SundialCompute{
 		}
 	}
 	
-	public static void main(String[] args){
-		SundialCompute sc = new SundialCompute(21, -150, 4172013);
+	/*public static void main(String[] args){
+		SundialCompute sc = new SundialCompute(21, -150, 4, 17, 2013);
 		
 		sc.hourAngles();
 		sc.printAngles();
@@ -190,5 +184,5 @@ public class SundialCompute{
 		
 		sc.intoRadians(sc.hourAngles());
 		sc.printAngles();
-	}
+	}*/
 }
