@@ -119,17 +119,18 @@ public class SundialDraw extends JPanel{
 				coordinates[i][1] = y;
 			}else{
 				// x coordinate will be maximized
-				if(angles[i] > 0)
+				if(angles[i] > 0){
 					x = this.getWidth() / (2.0);
-				else
+					y = Math.tan((Math.PI / 2) - angles[i]) * x;
+				}else{
 					x = this.getWidth() / (-2.0);
-				y = Math.tan((Math.PI / 2) - angles[i]) * x;
-				if((angles[i] > Math.PI/2) || (angles[i] < -Math.PI/2)){
-					y = -y;
-				}
+					y = Math.tan((Math.PI / 2) + angles[i]) * -x;
+				}	
+				
 				coordinates[i][0] = x;
 				coordinates[i][1] = y;
 			}
+
 		}
 		
 		return coordinates;
