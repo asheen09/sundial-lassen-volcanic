@@ -1,3 +1,5 @@
+package sundial;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
