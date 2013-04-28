@@ -6,6 +6,9 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Line2D.Double;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 
 public class SundialGnomon extends JPanel{
@@ -22,6 +25,25 @@ public class SundialGnomon extends JPanel{
 		frame.setSize(600, 800);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+	}
+	
+	public void printGnomon(){
+		PrinterJob pjob = PrinterJob.getPrinterJob();
+		PageFormat preformat = pjob.defaultPage();
+		PageFormat postformat = pjob.pageDialog(preformat);
+		//If user does not hit cancel then print.
+		if (preformat != postformat) {
+		    //Set print component
+		    pjob.setPrintable(new SundialPrint(frame), postformat); //this is what's needed to integrate it
+		    if (pjob.printDialog()) {
+		        try {
+					pjob.print();
+				} catch (PrinterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		}
 	}
 	
 	public void paintComponent(Graphics g){
