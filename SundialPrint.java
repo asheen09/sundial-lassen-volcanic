@@ -24,10 +24,8 @@ public class SundialPrint implements Printable{
 		}
 		
 		Dimension d = c.getSize();
-		double imageHeight = d.getHeight();
 		double imageWidth = d.getWidth();
 		
-		double pageHeight = format.getImageableHeight();
 		double pageWidth = format.getImageableWidth();
 		
 		double pageX = format.getImageableX();
