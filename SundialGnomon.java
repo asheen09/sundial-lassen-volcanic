@@ -1,16 +1,27 @@
+package sundial;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Line2D.Double;
-
 import javax.swing.JPanel;
+import javax.swing.JFrame;
 
 
 public class SundialGnomon extends JPanel{
 	private double gnomonAngle;
+	JFrame frame;
 	
-	public SundialGnomon(){
-		gnomonAngle = Math.PI/4; //whatever method you can make to pass the latitude as an angle
+	public SundialGnomon(double angle){
+		gnomonAngle = angle; //whatever method you can make to pass the latitude as an angle
+	}
+	
+	public void displayGnomon(){
+		frame = new JFrame();
+		frame.add(this); //this is what's needed to integrate it
+		frame.setSize(600, 800);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 	}
 	
 	public void paintComponent(Graphics g){
@@ -42,5 +53,4 @@ public class SundialGnomon extends JPanel{
 		img.draw(angleLine);
 		
 	}
-	
 }
