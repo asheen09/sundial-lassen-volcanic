@@ -1,3 +1,5 @@
+package sundial;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,28 +11,27 @@ import java.lang.Math;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-// 
 // angles need to be in radians for Java MATH, can change if necessary
 public class SundialDraw extends JPanel{
 	private Double[] angles;
+	private JFrame frame;
 	
-	public SundialDraw(){
-		//angles = SundialCompute.getAngles();
-		angles = new Double[]{-Math.PI/2, -893*Math.PI/3000, -3217*Math.PI/18000, -499*Math.PI/4500, -74*Math.PI/1125, -139*Math.PI/4500, 0.0,
-				139*Math.PI/4500, 74*Math.PI/1125, 499*Math.PI/4500, 3217*Math.PI/18000, 893*Math.PI/3000, Math.PI/2};
+	public SundialDraw(Double[] angles){
+		this.angles = angles;
 	}
 	
 	//this isn't needed, just for testing purposes
 	//it also outlines how you just need to add the SundialDraw and SundialGnomon as panels for a frame
 	//and set printable to SundialPrint
-	public static void main(String[] args){
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(new SundialDraw()); //this is what's needed to integrate it
+	public void displayLines(){
+		frame = new JFrame();
+		frame.add(this); //this is what's needed to integrate it
 		frame.setSize(600, 800);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		
+	}
+	
+	public void printSundial(){
 		PrinterJob pjob = PrinterJob.getPrinterJob();
 		PageFormat preformat = pjob.defaultPage();
 		PageFormat postformat = pjob.pageDialog(preformat);
