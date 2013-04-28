@@ -12,10 +12,11 @@ import java.awt.TextField;
 import java.awt.Label;
 import java.awt.GridLayout;
 import java.awt.Panel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.util.*;
 
-	public class SundialInterface extends Applet implements ActionListener{ // begins SundialInterface
+	public class SundialInterface implements ActionListener{ // begins SundialInterface
 	
 	// Variable Declaration
 		public static final String CREATE = new String("Create");
@@ -50,15 +51,19 @@ import java.util.*;
 	// Initialize ActionListener
 		createButton.addActionListener(this);
 		printButton.addActionListener(this);
-	// Panels
+		
+		JFrame mainFrame = new JFrame("Sundial");
 		Panel mainPanel = new Panel();
-	// Panel Dimensions
-		mainPanel.setSize(200, 300);
+	// Frame initialization
+		mainFrame.setVisible(true);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setSize(400, 200);
+	
 	// Arrangment (4 rows by 2 columns);
 		GridLayout layout = new GridLayout(4, 2);
 		mainPanel.setLayout(layout);
 	// Top Panel
-		this.add(mainPanel);
+		mainFrame.add(mainPanel);
 	// 8 Panels
 		Panel panel1 = new Panel();
 		Panel panel2 = new Panel();
@@ -89,15 +94,6 @@ import java.util.*;
 		mainPanel.add(panel7);
 		mainPanel.add(panel8);
 		
-	// (Get) Applet Size
-		int iWidth = this.getWidth();
-		int iHeight = this.getHeight();
-		final int TWO = 2;
-	// Center X & Y
-		iXAppletCenter = iWidth/TWO;
-		iYAppletCenter = iHeight/TWO;
-		iX = iXAppletCenter;
-		iY = iYAppletCenter;
 	} // closes init()
 	
 	public void invalidInputMessageBox(String message){ // begins invalidInputMessageBox
@@ -180,16 +176,28 @@ import java.util.*;
 			}
 			
 			if(allCorrect){
+				Double[] angles;
+				
 				sunComp = new SundialCompute(dLatitude, dLongitude, month, day, year);
-				sunDraw = new SundialDraw(sunComp.intoRadians(sunComp.hourAngles()));
+				angles = sunComp.hourAngles();
+
+				// Prints out angles in degrees
+				sunComp.printAngles();
+
+				sunDraw = new SundialDraw(sunComp.intoRadians(angles));
 				sunGnom = new SundialGnomon(Math.toRadians(dLatitude));
 				sunGnom.displayGnomon();
 				sunDraw.displayLines();
+				
+				// Prints out angles that have been converted to radians
+				System.out.println();
+				sunComp.printAngles();
 			}
 		}
 		if(printButton.equals(event.getSource())){ // begins else if
 			if(allCorrect){	
 				sunDraw.printSundial();
+				sunGnom.printGnomon();
 			}
 		} // closes else if
 	} // closes actionPerformed
@@ -203,4 +211,9 @@ import java.util.*;
 */	
 	} // closes paint
 
-		} // closes SundialInterface
+	public static void main(String args[]){
+		SundialInterface si = new SundialInterface();
+		si.init();
+	}
+
+} // closes SundialInterface
