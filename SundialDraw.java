@@ -1,6 +1,5 @@
 package sundial;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
@@ -132,10 +131,6 @@ public class SundialDraw extends JPanel{
 			}
 
 		}
-		
 		return coordinates;
-		
-	}
-	
-	
+	}	
 }

@@ -4,10 +4,6 @@ package sundial;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Button;
-import java.applet.Applet;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.TextField;
 import java.awt.Label;
 import java.awt.GridLayout;
@@ -21,11 +17,7 @@ import java.util.*;
 	// Variable Declaration
 		public static final String CREATE = new String("Create");
 		public static final String PRINT = new String("Print");
-		private Integer iX = new Integer(0);
-      private Integer iY = new Integer(0);
-		private Integer iXAppletCenter = 0;
-		private Integer iYAppletCenter = 0;
-		private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		private int[] days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		private boolean allCorrect = false;
 		private SundialCompute sunComp;
 		private SundialDraw sunDraw;
@@ -59,7 +51,7 @@ import java.util.*;
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setSize(400, 200);
 	
-	// Arrangment (4 rows by 2 columns);
+	// Arrangement (4 rows by 2 columns);
 		GridLayout layout = new GridLayout(4, 2);
 		mainPanel.setLayout(layout);
 	// Top Panel
@@ -100,9 +92,49 @@ import java.util.*;
 		JOptionPane.showMessageDialog(null, message);
 	} // closes invalidInputMessageBox
 	
-	public void actionPerformed(ActionEvent event){ // begins actionPerformed
+	
+	/**
+	 * Verifies the following data for correctness:
+	 * 1) Latitude
+	 * 2) Longitude
+	 * 3) Month
+	 * 4) Day
+	 * 5) Year
+	 * 
+	 * Returns a boolean, isCorrect, for JUnit test purposes
+	 */
+	public boolean verifyData(double latitude, double longitude, int month, int day, int year){
 		
-		String buttonName = event.getActionCommand();
+		boolean isCorrect = true;
+		
+		// Verify latitude and longitude data are within bounds
+		if(longitude < -180 || longitude > 180){
+			allCorrect = false;
+			isCorrect  = false;
+		    invalidInputMessageBox("Please ensure longitude is in range: -180.0 to 180.0");
+	    }
+		if(latitude < -90 || latitude > 90){
+			allCorrect = false;
+			isCorrect  = false;
+			invalidInputMessageBox("Please ensure latitude is in range: -90.0 to 90.0");
+		}
+		// Verify month and day are within bounds
+		if(month < 1 || month > 12){
+			allCorrect = false;
+			isCorrect  = false;
+			invalidInputMessageBox("Please enter a month between 1 and 12\n" +
+						           "Date: MMDDYYYY");
+		}
+		else if(day < 1 || day > days[month-1]){
+			allCorrect = false;
+			isCorrect  = false;
+			invalidInputMessageBox("Please enter a date within the given month's range\n" + 
+						           "Date: MMDDYYYY");
+		}
+		return isCorrect;
+	}
+	
+	public void actionPerformed(ActionEvent event){ // begins actionPerformed
 		
 		String latitude = tfLatitude.getText();
 		String longitude = tfLongitude.getText();
@@ -111,6 +143,9 @@ import java.util.*;
 		double dLatitude = 0;
 		double dLongitude = 0;
 		int iDate = 0;
+		int month = 0;
+		int day = 0;
+		int year = 0;
 		
 		if(createButton.equals(event.getSource())){ // begins if - 
 			allCorrect = true;
@@ -127,6 +162,11 @@ import java.util.*;
 					if(date.substring(0,1).equals("0")){ // begins if
 						date = date.substring(1, date.length());
 					} // closes if
+					if(date.length() < 7){
+						allCorrect = false;
+						invalidInputMessageBox("There is not enough data to determine the date\n" +
+						                       "Date: MMDDYYYY");
+					}
 					iDate = Integer.parseInt(date); // date conversion
 				} // closes try
 				catch(InputMismatchException ime){ // begins catch
@@ -136,62 +176,40 @@ import java.util.*;
 				catch(NumberFormatException nfe){ // begins catch
 					allCorrect = false;
 					invalidInputMessageBox("Please provide proper numbers for all fields\n" +
-				                          "Latitude range: -90.0 to 90.0\n" +
-												  "Longtidue range: -180.0 to 180.0");
+				                           "Latitude range: -90.0 to 90.0\n" +
+									       "Longtidue range: -180.0 to 180.0\n" + 
+				                           "Date: MMDDYYYY");
 				} // closes catch
 			}
-			
-			// sanitization for latitude and longitude data
-			if(dLongitude < -180 || dLongitude > 180){
-				allCorrect = false;
-				invalidInputMessageBox("Please ensure longitude is in range: -180.0 to 180.0");
-			}
-			if(dLatitude < -90 || dLatitude > 90){
-				allCorrect = false;
-				invalidInputMessageBox("Please ensure latitude is in range: -90.0 to 90.0");
-			}
-					
+						
 			/** Taken from SundialCompute.java EOT()*/
-			int tempDate = iDate; // modify "date" variable to "iDate"
+			// Only call verifyData() if dLatitude, dLongitude, and iDate
+			// if they actual numbers
+			if(allCorrect){
+				int tempDate = iDate; // modify "date" variable to "iDate"
 				
-			//Extract Year
-			tempDate = (tempDate/10000)*10000;
-			int year = (iDate - tempDate);
-			// Extract Day
-			tempDate = (tempDate/1000000)*1000000 + year;
-			int day =(iDate - tempDate)/10000;
-			// Extract Month
-			int month =  iDate/1000000;
+				//Extract Year
+				tempDate = (tempDate/10000)*10000;
+				year     = (iDate - tempDate);
+				// Extract Day
+				tempDate = (tempDate/1000000)*1000000 + year;
+				day      = (iDate - tempDate)/10000;
+				// Extract Month
+				month    =  iDate/1000000;
 			
-			// sanitization for month and day of the month
-			if(month < 1 || month > 12){
-				allCorrect = false;
-				invalidInputMessageBox("Please enter a month between 1 and 12\n" +
-				                       "Format: MMDDYYYY");
+				verifyData(dLatitude, dLongitude, month, day, year);
 			}
-			else if(day < 1 || day > days[month-1]){
-				allCorrect = false;
-				invalidInputMessageBox("Please enter a date within the given month's range\n" + 
-				                       "Format: MMDDYYYY");
-			}
-			
+				
 			if(allCorrect){
 				Double[] angles;
 				
 				sunComp = new SundialCompute(dLatitude, dLongitude, month, day, year);
-				angles = sunComp.hourAngles();
-
-				// Prints out angles in degrees
-				sunComp.printAngles();
+				angles  = sunComp.hourAngles();
 
 				sunDraw = new SundialDraw(sunComp.intoRadians(angles));
 				sunGnom = new SundialGnomon(Math.toRadians(dLatitude));
 				sunGnom.displayGnomon();
 				sunDraw.displayLines();
-				
-				// Prints out angles that have been converted to radians
-				System.out.println();
-				sunComp.printAngles();
 			}
 		}
 		if(printButton.equals(event.getSource())){ // begins else if
@@ -201,19 +219,9 @@ import java.util.*;
 			}
 		} // closes else if
 	} // closes actionPerformed
-	
-	public void paint(Graphics window){ // begins paint
-/**	// Instantiate Window
-		SundialInterface sundialApplet = new SundialInterface();
-	// Set Window
-		window.setColor(Color.black);
-	//
-*/	
-	} // closes paint
 
 	public static void main(String args[]){
 		SundialInterface si = new SundialInterface();
 		si.init();
 	}
-
 } // closes SundialInterface

@@ -3,7 +3,6 @@ package sundial;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Line2D.Double;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import java.awt.print.PageFormat;
@@ -72,7 +71,6 @@ public class SundialGnomon extends JPanel{
 		
 		img.draw(baseLine);
 		img.draw(hLine);
-		img.draw(angleLine);
-		
+		img.draw(angleLine);		
 	}
 }

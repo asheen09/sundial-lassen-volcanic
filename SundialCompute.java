@@ -30,13 +30,13 @@ public class SundialCompute{
 	private int      year;
 	
 	public SundialCompute(double lati, double longi, int month, int day, int year){
-		latitude = lati;
-		longitude = longi;
+		latitude   = lati;
+		longitude  = longi;
 		angOfHours = new Double[13];
-		stdMeri = (int)(Math.round(longitude/15) * 15);
+		stdMeri    = (int)(Math.round(longitude/15) * 15);
 		this.month = month;
-		this.day = day;
-		this.year = year;
+		this.day   = day;
+		this.year  = year;
 	}
 	
 	/**
@@ -54,8 +54,8 @@ public class SundialCompute{
 	 * 
 	 */
 	public Double[] hourAngles(){
-		double tanD = 0;
-		double hourOfTime = 15.00;
+		double tanD          = 0;
+		double hourOfTime    = 15.00;
 		double adjustmentAng = 0;
 		
 		/*
