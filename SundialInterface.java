@@ -18,7 +18,7 @@ import java.util.*;
 	public class SundialInterface extends Applet implements ActionListener{ // begins SundialInterface
 	
 	// Variable Declaration
-		public static final String CALC = new String("Calculate");
+		public static final String CREATE = new String("Create");
 		public static final String PRINT = new String("Print");
 		private Integer iX = new Integer(0);
       private Integer iY = new Integer(0);
@@ -26,9 +26,12 @@ import java.util.*;
 		private Integer iYAppletCenter = 0;
 		private int[]    days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		private boolean allCorrect = false;
+		private SundialCompute sunComp;
+		private SundialDraw sunDraw;
+		private SundialGnomon sunGnom;
 
 	// Button Data Fields
-		private Button calcButton = new Button(CALC);
+		private Button createButton = new Button(CREATE);
 		private Button printButton = new Button(PRINT);
 	// Label Data Field
 		private Label latitudeHere = new Label("Latitude: ");
@@ -45,13 +48,13 @@ import java.util.*;
 		tfDate.setText("MMDDYYYY");
 	
 	// Initialize ActionListener
-		calcButton.addActionListener(this);
+		createButton.addActionListener(this);
 		printButton.addActionListener(this);
 	// Panels
 		Panel mainPanel = new Panel();
 	// Panel Dimensions
 		mainPanel.setSize(200, 300);
-	// Arrangment (4 rows by 3 columns);
+	// Arrangment (4 rows by 2 columns);
 		GridLayout layout = new GridLayout(4, 2);
 		mainPanel.setLayout(layout);
 	// Top Panel
@@ -65,6 +68,7 @@ import java.util.*;
 		Panel panel6 = new Panel();
 		Panel panel7 = new Panel();
 		Panel panel8 = new Panel();
+
 	// Panel Components
 		panel1.add(latitudeHere);
 		panel2.add(longitudeHere);
@@ -72,8 +76,9 @@ import java.util.*;
 		panel4.add(tfLatitude);
 		panel5.add(tfLongitude);
 		panel6.add(tfDate);
-		panel7.add(calcButton);
+		panel7.add(createButton);
 		panel8.add(printButton);
+		
 	// Panel Additives
 		mainPanel.add(panel1);
 		mainPanel.add(panel4);
@@ -83,6 +88,7 @@ import java.util.*;
 		mainPanel.add(panel6);
 		mainPanel.add(panel7);
 		mainPanel.add(panel8);
+		
 	// (Get) Applet Size
 		int iWidth = this.getWidth();
 		int iHeight = this.getHeight();
@@ -110,7 +116,7 @@ import java.util.*;
 		double dLongitude = 0;
 		int iDate = 0;
 		
-		if(calcButton.equals(event.getSource())){ // begins if - 
+		if(createButton.equals(event.getSource())){ // begins if - 
 			allCorrect = true;
 		
 			// latitude, longitude, date input length validation
@@ -151,8 +157,6 @@ import java.util.*;
 					
 			/** Taken from SundialCompute.java EOT()*/
 			int tempDate = iDate; // modify "date" variable to "iDate"
-			int dayNum = 0;
-			boolean isLeapY = false;
 				
 			//Extract Year
 			tempDate = (tempDate/10000)*10000;
@@ -174,30 +178,18 @@ import java.util.*;
 				invalidInputMessageBox("Please enter a date within the given month's range\n" + 
 				                       "Format: MMDDYYYY");
 			}
-			else{
-				// Find Number of Days Past
-				for(int i = 0; i < month - 1; i++){ // begins for
-					dayNum = dayNum + days[i];
-				} // closes for
-				dayNum = dayNum + day;
-				// Determine Leap Year
-				if(year%4 == 0){ // begins if
-					if(year%100 != 0){ // begins if
-						isLeapY = true;
-					} // closes if
-					else if(year%400 == 0){ // begins else if
-						isLeapY = true;
-					} // closes else if
-				} // closes if
-				// Add extra day if past February on a leap year
-				if(isLeapY && month > 2){ // begins if
-					dayNum = dayNum + 1;
-				} // closes if
-			} // closes else
+			
+			if(allCorrect){
+				sunComp = new SundialCompute(dLatitude, dLongitude, month, day, year);
+				sunDraw = new SundialDraw(sunComp.intoRadians(sunComp.hourAngles()));
+				sunGnom = new SundialGnomon(Math.toRadians(dLatitude));
+				sunGnom.displayGnomon();
+				sunDraw.displayLines();
+			}
 		}
 		if(printButton.equals(event.getSource())){ // begins else if
-			if(allCorrect){
-				JOptionPane.showMessageDialog(null, "(''')(O,,,O)(''')");
+			if(allCorrect){	
+				sunDraw.printSundial();
 			}
 		} // closes else if
 	} // closes actionPerformed
