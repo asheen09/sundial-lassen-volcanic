@@ -10,26 +10,37 @@ import java.lang.Math;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-// angles need to be in radians for Java MATH, can change if necessary
+/**
+ * @author Takanori
+ * 
+ * This class draws out the hour lines for the sundial.  
+ */
 public class SundialDraw extends JPanel{
 	private Double[] angles;
 	private JFrame frame;
 	
+	/*
+	 * Angles passed must be in radians.  Assumes indices 0-12 correspond to hours 6am - 6pm.
+	 * Angles are from gnomon.
+	 */
 	public SundialDraw(Double[] angles){
 		this.angles = angles;
 	}
 	
-	//this isn't needed, just for testing purposes
-	//it also outlines how you just need to add the SundialDraw and SundialGnomon as panels for a frame
-	//and set printable to SundialPrint
+	/*
+	 * Displays hour lines in a new window.
+	 */
 	public void displayLines(){
 		frame = new JFrame();
-		frame.add(this); //this is what's needed to integrate it
+		frame.add(this); 
 		frame.setSize(600, 800);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
+	/*
+	 * Calls up printing prompt for hour lines.
+	 */
 	public void printSundial(){
 		PrinterJob pjob = PrinterJob.getPrinterJob();
 		PageFormat preformat = pjob.defaultPage();
@@ -49,6 +60,10 @@ public class SundialDraw extends JPanel{
 		}
 	}
 	
+	/*
+	 * Overrides paintComponent.  Draws hour lines using coordinate system.  Coordinate system translated
+	 * to be like commonly used coordinate system rather than default.
+	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		
@@ -58,14 +73,13 @@ public class SundialDraw extends JPanel{
 		Line2D[] lines = new Line2D[13];
 		int[] hours = new int[]{6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6};
 		
-		// translate origin to bottom center, and make y increase upward and x increase rightward
+		// translate origin to center, and make y increase upward and x increase rightward
 		Graphics2D img = (Graphics2D) g;
 		img.translate(this.getWidth()/2.0, this.getHeight()/2.0); //component should be drawing window
 		
 		img.setFont(img.getFont().deriveFont((float) 20.0));
 		for(int i=0; i<lines.length; i++){
 			if((endpoints[i][0] != null) && (endpoints[i][1] != null)){
-				//System.out.println(endpoints[i][0] + "   " + endpoints[i][1]);
 				if(angles[i] < 0){ //x is fine
 					if(angles[i] > -Math.PI/2){ //shift y down
 						img.drawString(hours[i] + "", (int)(endpoints[i][0] + 0), (int)((-endpoints[i][1]) + 15));
@@ -98,7 +112,7 @@ public class SundialDraw extends JPanel{
 	}
 	
 	/*
-	 * Based on angle from gnomon
+	 * Calculates coordinates to draw lines with.  Core angle is angle to corner of image.
 	 */
 	public Double[][] calcCoordinates(double coreAngle){
 		Double[][] coordinates = new Double[13][2];

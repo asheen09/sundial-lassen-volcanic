@@ -8,7 +8,11 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 
-
+/**
+ * @author Takanori
+ * 
+ * This class extends printable.  Allows the passed image to scale to the page size.
+ */
 public class SundialPrint implements Printable{
 	private Component c;
 	
@@ -16,6 +20,9 @@ public class SundialPrint implements Printable{
 		this.c = c;
 	}
 	
+	/*
+	 * Image is scaled to width of page, so it assumes letter printing and not landscape.
+	 */
 	public int print(Graphics g, PageFormat format, int page)
 			throws PrinterException {
 		// only one page
